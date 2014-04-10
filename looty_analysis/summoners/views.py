@@ -1,6 +1,6 @@
 from django.http import HttpResponse
 import json
-from leagueoflegends import LeagueOfLegends, RiotError
+from summoners.leagueoflegends import LeagueOfLegends, RiotError
 
 def index(request):
     return HttpResponse("Hello, world!")
