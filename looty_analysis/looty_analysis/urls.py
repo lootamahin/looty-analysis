@@ -9,4 +9,5 @@ urlpatterns = patterns('',
     # url(r'^blog/', include('blog.urls')),
     url(r'^summoners/', include('summoners.urls')),
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^$', 'looty_analysis.views.home', name='home'),
 )
