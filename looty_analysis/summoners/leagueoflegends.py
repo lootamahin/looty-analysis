@@ -15,7 +15,7 @@ approved in any way by Riot Games, Inc. or any of its affiliates.
 __author__ = 'Jennie Lees'
 __version__ = '0.1'
 
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 import json
 import unicodedata
 import re
@@ -34,8 +34,8 @@ class LeagueOfLegends:
     def __webrequest(self, url):
         # print 'Making request to: ' + url
         try:
-            opener = urllib2.build_opener(NotModifiedHandler())
-            req = urllib2.Request(url)
+            opener = urllib.request.build_opener(NotModifiedHandler())
+            req = urllib.request.Request(url)
 
             if url in self.__cache:
                 # Return summoner detail URLs from cache explicitly
@@ -44,20 +44,20 @@ class LeagueOfLegends:
                     return self.__cache[url]['response']
 
                 if 'etag' in self.__cache[url]:
-                    print 'Adding ETag to request header: '\
-                        + self.__cache[url]['etag']
+                    print('Adding ETag to request header: '\
+                        + self.__cache[url]['etag'])
                     req.add_header('If-None-Match',
                                    self.__cache[url]['etag'])
                 if 'last_modified' in self.__cache[url]:
-                    print 'Adding Last-Modified to request header: '\
-                        + self.__cache[url]['last_modified']
+                    print('Adding Last-Modified to request header: '\
+                        + self.__cache[url]['last_modified'])
                     req.add_header('If-Modified-Since',
                                    self.__cache[url]['last_modified'])
 
             url_handle = opener.open(req)
 
             if hasattr(url_handle, 'code') and url_handle.code == 304:
-                print 'Got 304 response, no body send'
+                print('Got 304 response, no body send')
                 return self.__cache[url]['response']
             else:
                 headers = url_handle.info()
@@ -67,15 +67,15 @@ class LeagueOfLegends:
                     'response': response,
                     'url': url.replace('?api_key=' + self.api_key, '')}
 
-                if headers.getheader('Last-Modified'):
-                    cache_data['last_modified'] = headers.getheader('Last-Modified')
+                if headers.get('Last-Modified'):
+                    cache_data['last_modified'] = headers.get('Last-Modified')
 
-                if headers.getheader('ETag'):
-                    cache_data['etag'] = headers.getheader('ETag').replace('"', '')
+                if headers.get('ETag'):
+                    cache_data['etag'] = headers.get('ETag').replace('"', '')
 
                 self.__cache[url] = cache_data
-                return response
-        except urllib2.HTTPError, e:
+                return response.decode("utf-8")
+        except urllib.error.HTTPError as e:
             # You should surround your code with try/catch that looks for a HTTPError
             # code 429 -- this is a rate limit error from Riot.
             # print 'HTTPError calling ' + url
@@ -316,7 +316,7 @@ class DataMismatchError(Exception):
     # Received data back for a different query than requested, e.g. summoner ID mismatch.
     pass
 
-class NotModifiedHandler(urllib2.BaseHandler):
+class NotModifiedHandler(urllib.request.BaseHandler):
 
     def http_error_304(self, req, fp, code, message, headers):
         addinfourl = urllib2.addinfourl(fp, headers, req.get_full_url())
