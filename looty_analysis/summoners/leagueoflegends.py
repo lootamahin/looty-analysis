@@ -61,7 +61,7 @@ class LeagueOfLegends:
                 return self.__cache[url]['response']
             else:
                 headers = url_handle.info()
-                response = url_handle.read()
+                response = url_handle.read().decode("utf-8")
 
                 cache_data = {
                     'response': response,
@@ -74,7 +74,7 @@ class LeagueOfLegends:
                     cache_data['etag'] = headers.get('ETag').replace('"', '')
 
                 self.__cache[url] = cache_data
-                return response.decode("utf-8")
+                return response
         except urllib.error.HTTPError as e:
             # You should surround your code with try/catch that looks for a HTTPError
             # code 429 -- this is a rate limit error from Riot.
