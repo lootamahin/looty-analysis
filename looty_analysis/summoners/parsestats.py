@@ -21,7 +21,9 @@ class ParseStats:
         # We want to replace the "," and ":" within the { } for "aggregatedStats".
         # Otherwise, we can't parse the data correctly within the for loop below
         JAGTEST = self.stats
-        JAGTEST = re.sub('\{.*\}', lambda x:x.group(0).replace(',',';'), JAGTEST)
+		#The question mark below is important - it forces the pattern not to be HUNGRY - aka, go to the last } in the string... now goes to the first
+		#This is important because the last string contains 2 x }
+        JAGTEST = re.sub('\{.*?\}', lambda x:x.group(0).replace(',',';'), JAGTEST)
         JAGTEST = re.sub('\{|\}', '|', JAGTEST)
         
 #MODIFIED SAMPLE TEXT:
